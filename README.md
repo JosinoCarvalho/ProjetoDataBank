@@ -115,6 +115,29 @@ GROUP BY regions.region_name;
 | Australia|   15   |       23        |       28        |
 |  Europe  |   15   |       24        |       28        |
 
+## Parte B. Transações do cliente
+
+### 1. Qual é a contagem exclusiva e o valor total para cada tipo de transação?
+```sql
+SELECT txn_type as Transaction_Type, 
+  COUNT(txn_type) as Count_Of_Transactions,  
+  SUM(txn_amount) as Total_Transaction_Amount
+FROM data_bank.customer_transactions
+GROUP BY txn_type;
+```
+
+- O `COUNT(txn_type) as Count_Of_Transactions` calcula a contagem de ocorrências de cada valor único na coluna "txn_type". A coluna de resultados é rotulada como "Count_Of_Transactions".
+
+- O `SUM(txn_amount) as Total_Transaction_Amount` calcula a soma dos valores na coluna "txn_amount" para cada "txn_type" exclusivo. A coluna de resultados é rotulada como "Total_Transaction_Amount".
+
+- A cláusula `GROUP BY txn_type` agrupa os resultados por valores únicos na coluna "txn_type". Isto significa que os cálculos subsequentes serão realizados separadamente para cada tipo de transação distinto.
+
+| tipo_transação | contagem_de_transações | total_transaction_amount |
+|------------------|-----------------------|------ -------------------|
+| comprar | 1617 | 806537 |
+| depósito | 2671 | 1359168 |
+| retirada | 1580 | 793003 |
+
 
 
 
