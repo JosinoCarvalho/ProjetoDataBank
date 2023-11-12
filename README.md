@@ -352,7 +352,13 @@ ON customer_transactions.customer_id = cte3.customer_id
 
 ## Sugestões e conclusão
 
+1. **Desvendando os Impactos da Realocação**: Explorar as ramificações da realocação de clientes em seus padrões de transação pode revelar insights fascinantes. Descobrir se os clientes realocados alteram seu comportamento transacional pós-mudança pode fornecer percepções valiosas sobre a adaptação das estratégias de engajamento do cliente.
 
+2. **Segmentação para Melhoria**: Segmentar clientes com base em seus comportamentos de transação e crescimento de saldo poderia fornecer uma imagem mais clara da diversificada base de clientes. Essa segmentação poderia orientar esforços de marketing direcionados, iniciativas de educação financeira e serviços personalizados com base nas necessidades específicas dos clientes.
+   
+3. **Cronograma de atualização**: coletar feedback dos clientes sobre o processo de realocação e a experiência bancária geral pode destacar áreas que precisam ser melhoradas. Os insights provenientes das opiniões dos clientes podem orientar refinamentos na estratégia de realocação, levando a uma maior satisfação e fidelidade do cliente.
+
+Concluindo a análise do Banco de Dados, identificamos componentes essenciais que destacam a saúde operacional e os comportamentos positivos dos clientes. Ao incorporar melhorias sugeridas, o banco está posicionado para melhoria operacional, envolvimento do cliente e ofertas de bem-estar financeiro, promovendo uma experiência bancária mais eficaz e enriquecedora.
 
 
 
