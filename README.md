@@ -2,8 +2,7 @@
   <h1>Projeto: Setor Bancário - Comportamento Dos Clientes </h1>
 </div>
 
-
-![image](https://github.com/JosinoCarvalho/ProjetoDataBank/assets/111013250/73af6dc8-c5a1-4675-afd2-cfac8e685aa4)
+![image](https://github.com/JosinoCarvalho/ProjetoDataBank/assets/111013250/b4fb6231-f809-4091-8ffc-0fc3851fcab4)
 
 
 ## Introdução
