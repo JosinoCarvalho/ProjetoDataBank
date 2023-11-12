@@ -13,8 +13,20 @@ No cenário dinâmico do setor bancário contemporâneo, a importância dos insi
 ## Diagrama de Relacionamento entre Entidades
 ![josinomoreira](https://github.com/JosinoCarvalho/ProjetoDataBank/assets/111013250/25ac285b-0359-4106-bc51-5d5ebc93161f)
 
-## Primeira parte. Explorar padrões de comportamento e tendências dos clientes para melhorar estratégias e serviços
+## Parte A. Explorar padrões de comportamento e tendências dos clientes para melhorar estratégias e serviços
 
 ### 1. Quantos clientes únicos existem no sistema de banco de dados?
+```sql
+SELECT COUNT(DISTINCT node_id) as Nodes
+FROM data_bank.customer_nodes;
+```
+
+- A função `COUNT(DISTINCT node_id)` é usada para calcular a contagem de valores únicos na coluna "node_id" da tabela "customer_nodes". Isto significa que os valores duplicados não são contados; cada valor exclusivo é contado apenas uma vez.
+
+| Nodes |
+|-------|
+|   5   |
+
+
 
 
