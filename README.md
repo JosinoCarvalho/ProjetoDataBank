@@ -13,3 +13,8 @@ No cenário dinâmico do setor bancário contemporâneo, a importância dos insi
 ## Diagrama de Relacionamento entre Entidades
 ![josinomoreira](https://github.com/JosinoCarvalho/ProjetoDataBank/assets/111013250/25ac285b-0359-4106-bc51-5d5ebc93161f)
 
+## Primeira parte. Explorar padrões de comportamento e tendências dos clientes para melhorar estratégias e serviços
+
+### 1. Quantos clientes únicos existem no sistema de banco de dados?
+
+
