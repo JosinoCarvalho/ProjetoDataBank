@@ -73,6 +73,48 @@ Esta consulta calcula o número de clientes alocados para cada região.
 |  Australia  |       110        |
 |   Europe    |       88         |
 
+### 4. Quantos dias em média os clientes são realocados para um nó diferente?
+```sql
+SELECT AVG(end_date::date - start_date::date)
+FROM data_bank.customer_nodes
+WHERE end_date < DATE '9999-01-01';
+```
+
+- A instrução `SELECT AVG(end_date::date - start_date::date)` calcula a duração média entre as colunas "end_date" e "start_date" para todas as linhas na tabela "customer_nodes". A notação `::date` é usada para converter explicitamente as colunas para o tipo de dados de data.
+- A cláusula `WHERE end_date < DATE '9999-01-01'` filtra as linhas da tabela "customer_nodes" para incluir apenas aquelas onde a "end_date" é anterior a 1º de janeiro de 9999.
+
+|   avg    |
+|----------|
+| 14.6340  |
+
+### 5. Qual é a mediana, os percentis 80 e 95 para esta mesma métrica de dias de realocação para cada região?
+```sql
+SELECT regions.region_name as Region,
+  percentile_cont(0.50) within group (ORDER BY end_date::date - start_date::date) as Median,
+  percentile_cont(0.80) within group (ORDER BY end_date::date - start_date::date) as "80th Percentile",
+  percentile_cont(0.95) within group (ORDER BY end_date::date - start_date::date) as "95th Percentile"
+FROM data_bank.customer_nodes
+JOIN data_bank.regions
+ON regions.region_id = customer_nodes.region_id
+WHERE end_date < DATE '9999-01-01'
+GROUP BY regions.region_name;
+```
+
+- O `percentile_cont(0.xx) dentro do grupo (ORDER BY end_date::date - start_date::date) as Median` calcula a duração mediana entre "end_date" e "start_date" para linhas em cada região. A função `percentile_cont` calcula um valor percentil especificado dentro de um grupo de valores ordenados pela duração calculada.
+
+- A cláusula `JOIN data_bank.regions ON regiões.region_id = customer_nodes.region_id` executa uma junção interna entre as tabelas "customer_nodes" e "regions" com base em valores correspondentes nas colunas "region_id".
+- A cláusula `WHERE end_date < DATE '9999-01-01'` filtra as linhas para incluir apenas aquelas em que a "end_date" é anterior a 1º de janeiro de 9999.
+- A cláusula `GROUP BY regiões.region_name` agrupa os resultados por nomes de regiões exclusivos.
+
+
+|  region  | median | 80th Percentile | 95th Percentile |
+|----------|--------|-----------------|-----------------|
+|  Africa  |   15   |       24        |       28        |
+| America  |   15   |       23        |       28        |
+|   Asia   |   15   |       23        |       28        |
+| Australia|   15   |       23        |       28        |
+|  Europe  |   15   |       24        |       28        |
+
 
 
 
