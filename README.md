@@ -214,6 +214,62 @@ GROUP BY Month;
 | 3     | 113   |
 | 4     | 50    |
 
+### 4. Qual é o saldo final de cada cliente no final do mês?
+```sql
+WITH CTE AS (
+  SELECT 
+    customer_id, 
+    EXTRACT('month' FROM txn_date) AS Month, 
+    CASE
+      WHEN txn_type IN ('purchase', 'withdrawal') THEN -txn_amount
+      ELSE txn_amount
+    END AS adjusted_amount
+  FROM data_bank.customer_transactions
+)
+SELECT 
+  cust.customer_id, 
+  months.Month, 
+  COALESCE(SUM(cte.adjusted_amount), 0) 
+    + CASE WHEN LAG(SUM(cte.adjusted_amount), 1) OVER (PARTITION BY cust.customer_id ORDER BY months.Month) IS NULL 
+           THEN 0 
+           ELSE LAG(SUM(cte.adjusted_amount), 1) OVER (PARTITION BY cust.customer_id ORDER BY months.Month) 
+      END AS Ending_Balance
+FROM 
+  (SELECT DISTINCT customer_id FROM data_bank.customer_transactions) AS cust
+CROSS JOIN 
+  (SELECT DISTINCT EXTRACT('month' FROM txn_date) AS Month FROM data_bank.customer_transactions) AS months
+LEFT JOIN 
+  CTE AS cte 
+ON 
+  cust.customer_id = cte.customer_id AND months.Month = cte.Month
+GROUP BY 
+  cust.customer_id, months.Month
+ORDER BY 
+  cust.customer_id, months.Month;
+```
+
+- A consulta usa uma Common Table Expression (CTE) chamada "CTE" para pré-processar os dados:
+   - O `EXTRACT('month' FROM txn_date) AS Month` extrai o componente do mês da coluna "txn_date" e o rotula como "Month".
+   - A instrução `CASE` ajusta o valor da transação com base no "txn_type". Se o tipo de transação for ‘compra’ ou ‘saque’, o valor da transação é negado; caso contrário, será mantido como está.
+
+- A consulta principal:
+   - A função `COALESCE` é utilizada para tratar casos em que não há dados de transação disponíveis para um cliente em um determinado mês. Ele soma os valores ajustados das transações e inclui o saldo final do mês anterior (usando a função de janela `LAG`) para calcular o saldo final do mês atual.
+   - A cláusula `GROUP BY` agrupa os resultados por "customer_id" e "Month".
+   - A cláusula `ORDER BY` ordena os resultados por "customer_id" e "Month".
+
+| customer_id | month | ending_balance |
+|-------------|-------|----------------|
+|      1      |   1   |      312       |
+|      1      |   2   |      312       |
+|      1      |   3   |     -952       |
+|      1      |   4   |     -952       |
+|      2      |   1   |      549       |
+|      2      |   2   |      549       |
+|      2      |   3   |       61       |
+|      2      |   4   |       61       |
+|      3      |   1   |      144       |
+|      3      |   2   |     -821       |
+
 
 
 
