@@ -138,6 +138,83 @@ GROUP BY txn_type;
 | depósito | 2671 | 1359168 |
 | retirada | 1580 | 793003 |
 
+### 2. Qual é a média total histórica de contagens e valores de depósitos para todos os clientes?
+```sql
+WITH CTE AS (
+  SELECT customer_ID,
+    COUNT(customer_id) as Count_Of_Transactions,  
+    AVG(txn_amount) as AVG_Transaction_Amount
+  FROM data_bank.customer_transactions
+  WHERE Txn_type = 'deposit'
+  GROUP BY customer_ID
+)
+SELECT ROUND(AVG(Count_Of_Transactions), 2) as AVG_Deposits, 
+  ROUND(AVG(AVG_Transaction_Amount), 2) as AVG_Deposit_Amounts
+FROM CTE;
+```
+
+- A consulta usa uma Common Table Expression (CTE) chamada "CTE" para definir um conjunto de resultados temporário:
+   - O `COUNT(customer_id) as Count_Of_Transactions` calcula a contagem de ocorrências de cada "customer_id" exclusivo onde o "Txn_type" é 'depósito'. A coluna de resultados é rotulada como "Count_Of_Transactions".
+   - O `AVG(txn_amount) as AVG_Transaction_Amount` calcula o valor médio de "txn_amount" para cada "customer_id" exclusivo onde o "Txn_type" é 'depósito'. A coluna de resultados é rotulada como "AVG_Transaction_Amount".
+   - A cláusula `WHERE Txn_type = 'deposit'` filtra as linhas para incluir apenas aquelas onde o "Txn_type" é 'deposit'.
+   - A cláusula `GROUP BY customer_ID` agrupa os resultados por "customer_id" exclusivo. Isto significa que os cálculos subsequentes serão realizados separadamente para cada ID de cliente distinto.
+
+- A consulta principal utiliza o CTE “CTE” para agregar os resultados do CTE:
+   - A instrução `SELECT ROUND(AVG(Count_Of_Transactions), 2) as AVG_Deposits` calcula a contagem média de transações para todos os clientes e arredonda o resultado para duas casas decimais. A coluna de resultados é rotulada como "AVG_Deposits".
+   - O `ROUND(AVG(AVG_Transaction_Amount), 2) as AVG_Deposit_Amounts` calcula a média dos valores médios das transações para todos os clientes e arredonda o resultado para duas casas decimais. A coluna de resultados é rotulada como "AVG_Deposit_Amounts".
+
+Esta consulta calcula as contagens e valores médios de depósitos para todos os clientes.
+| avg_depósitos | avg_deposit_amounts |
+|--------------|---------------------|
+| 5,34 | 508,61 |
+
+### 3. Para cada mês - quantos clientes do Data Bank fazem mais de 1 depósito e 1 compra ou 1 saque em um único mês?
+```sql
+WITH CTE AS (
+  SELECT customer_id, 
+    EXTRACT('month' FROM txn_date) as Month,
+    CASE WHEN txn_type = 'deposit' THEN 1 ELSE 0 END as deposit,
+    CASE WHEN txn_type = 'purchase' THEN 1 ELSE 0 END as purchase,
+    CASE WHEN txn_type = 'withdrawal' THEN 1 ELSE 0 END as withdrawal
+  FROM data_bank.customer_transactions
+),
+CTE2 AS (
+  SELECT month, customer_id, 
+    SUM(deposit) as dep, 
+    SUM(purchase) as pur, 
+    SUM(withdrawal) as withd
+  FROM CTE
+  GROUP BY Month, Customer_ID
+  ORDER BY Month, Customer_ID
+)
+SELECT month, COUNT(Month)
+FROM CTE2
+WHERE dep > 1 AND (pur = 1 OR withd = 1)
+GROUP BY Month;
+```
+
+- CTE1 (“CTE”):
+     - O `EXTRACT('month' FROM txn_date) as Month` extrai o componente do mês da coluna "txn_date" e o rotula como "Month".
+     - As instruções `CASE` subsequentes criam indicadores binários baseados na coluna "txn_type". Para cada tipo de transação ('depósito', 'compra', 'saque'), é atribuído o valor 1 se a condição for atendida, caso contrário, é atribuído 0.
+
+- CTE2 (“CTE2”):
+     - A instrução `SELECT mês, customer_id` seleciona as colunas "mês" e "customer_id".
+     - Os `SUM(depósito) como dep`, `SUM(compra) como pur` e `SUM(retirada) como retirada` calculam as somas dos indicadores binários para cada tipo de transação ('depósito', 'compra', ' retirada') para cada combinação única de mês e ID do cliente.
+     - A cláusula `GROUP BY Month, Customer_ID` agrupa os resultados por mês e ID do cliente.
+
+- A consulta principal:
+   - A instrução `SELECT COUNT(Month)` calcula a contagem de meses únicos onde as condições são atendidas.
+   - A cláusula `WHERE dep > 1 AND (pur = 1 OR withd = 1)` filtra os resultados para incluir apenas linhas onde a contagem de transações de 'depósito' é maior que 1 e transações de 'compra' ou 'retirada' estão presentes .
+   - A cláusula `GROUP BY Month` agrupa os resultados por mês.
+
+| month | count |
+| ----- | ----- |
+| 1     | 115   |
+| 2     | 108   |
+| 3     | 113   |
+| 4     | 50    |
+
+
 
 
 
