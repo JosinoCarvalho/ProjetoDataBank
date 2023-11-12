@@ -27,6 +27,23 @@ FROM data_bank.customer_nodes;
 |-------|
 |   5   |
 
+### 2. Qual é o número de clientes por região?
+```sql
+SELECT Region_Name, COUNT(DISTINCT node_id) as Nodes
+FROM data_bank.customer_nodes
+JOIN data_bank.regions
+ON customer_nodes.region_id = regions.region_id
+GROUP BY Region_Name;
+```
+
+- `COUNT(DISTINCT node_id) as Nodes`: This column calculates the count of unique values in the "node_id" column of the "customer_nodes" table. Each unique value is counted only once, and the result column is labeled as "Nodes".
+
+- The `JOIN data_bank.regions ON customer_nodes.region_id = regions.region_id` clause performs an inner join between the "customer_nodes" table and the "regions" table.
+ 
+- The `GROUP BY Region_Name` clause groups the data by the values in the "Region_Name" column.
+
+
+
 
 
 
