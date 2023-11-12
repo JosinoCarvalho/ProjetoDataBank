@@ -1,3 +1,6 @@
+![image](https://github.com/JosinoCarvalho/ProjetoDataBank/assets/111013250/9b20fd13-6e47-4629-8bfc-630df15e073a)
+
+
 ### 1. Quantos clientes únicos existem no sistema de banco de dados?
 SELECT COUNT(DISTINCT node_id) as Nodes
 FROM data_bank.customer_nodes;
