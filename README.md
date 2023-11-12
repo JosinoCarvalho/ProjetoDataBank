@@ -270,7 +270,87 @@ ORDER BY
 |      3      |   1   |      144       |
 |      3      |   2   |     -821       |
 
+### 5. Qual é a porcentagem de clientes que aumentam seu saldo final em mais de 5%?
+```sql
+WITH CTE AS (
+  SELECT 
+    customer_id, 
+    EXTRACT('month' FROM txn_date) AS Month, 
+    CASE
+      WHEN txn_type IN ('purchase', 'withdrawal') THEN -txn_amount
+      ELSE txn_amount
+    END AS adjusted_amount
+  FROM data_bank.customer_transactions
+),
 
+CTE2 AS (
+  SELECT 
+    cust.customer_id, 
+    months.Month, 
+    COALESCE(SUM(cte.adjusted_amount), 0) 
+      + CASE WHEN LAG(SUM(cte.adjusted_amount), 1) OVER (PARTITION BY cust.customer_id ORDER BY months.Month) IS NULL 
+             THEN 0 
+             ELSE LAG(SUM(cte.adjusted_amount), 1) OVER (PARTITION BY cust.customer_id ORDER BY months.Month) 
+        END AS Ending_Balance 
+  FROM 
+    (SELECT DISTINCT customer_id FROM data_bank.customer_transactions) AS cust
+  CROSS JOIN 
+    (SELECT DISTINCT EXTRACT('month' FROM txn_date) AS Month FROM data_bank.customer_transactions) AS months
+  LEFT JOIN 
+    CTE AS cte 
+  ON 
+    cust.customer_id = cte.customer_id AND months.Month = cte.Month
+  GROUP BY 
+    cust.customer_id, months.Month
+  ORDER BY 
+    cust.customer_id, months.Month
+),
+Balances as(
+SELECT Customer_ID,
+Case when month = 1 then ending_balance else 0 end as Opening_Balance,
+Case when month = 4 then ending_balance else 0 end as Final_ending_Balance
+From CTE2
+),
+
+CTE3 as (
+SELECT b1.customer_id, b1.opening_balance, b2.final_ending_balance
+FROM Balances as b1
+Join Balances as b2
+on b1.customer_id = b2.customer_id
+WHERE b1.Opening_Balance != 0 and b2.final_ending_balance != 0 and 
+b2.final_ending_balance > b1.Opening_Balance *1.05)
+
+Select Round(Count(Distinct cte3.customer_id):: decimal/ Count(Distinct customer_transactions.customer_id)*100, 2) As "Amount5%increase"
+From data_bank.customer_transactions
+Full outer Join CTE3
+ON customer_transactions.customer_id = cte3.customer_id
+```
+
+- CTE (“CTE”):
+   - Este CTE processa os dados brutos da transação da tabela "customer_transactions".
+   - Extrai o "customer_id", extrai o mês de "txn_date" como "Month" e calcula o "adjusted_amount" com base no tipo de transação.
+
+- CTE2:
+   - Este CTE calcula o saldo final de cada cliente para cada mês.
+   - Os valores ajustados das transações são somados junto com o saldo final do mês anterior usando a função da janela `LAG`.
+
+- Saldos:
+   - Este CTE extrai o saldo inicial (no mês 1) e o saldo final final (no mês 4) de cada cliente.
+
+- CTE3:
+   - Este CTE filtra os clientes que possuem saldo inicial e saldo final final, e onde o saldo final final é pelo menos 5% maior que o saldo inicial.
+
+- A consulta final:
+   - Esta consulta calcula a percentagem de clientes do CTE3 relativamente ao número total de clientes distintos na tabela "customer_transactions".
+   - Executa uma junção externa completa entre "customer_transactions" e CTE3 com base no "customer_id".
+   - A porcentagem é calculada dividindo a contagem de IDs de clientes distintos em CTE3 pela contagem de IDs de clientes distintos em "customer_transactions".
+   - O resultado é arredondado para duas casas decimais e rotulado como "Amount5%increase".
+
+| Amount5%increase |
+|------------------|
+|       29.60      |
+
+## Sugestões e conclusão
 
 
 
