@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Projeto DataBank: Data Bank</h1>
+  <h1>Projeto DataBank</h1>
 </div>
 
 ![image](https://github.com/JosinoCarvalho/ProjetoDataBank/assets/111013250/9b20fd13-6e47-4629-8bfc-630df15e073a)
