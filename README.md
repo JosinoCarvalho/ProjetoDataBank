@@ -40,6 +40,41 @@ GROUP BY Region_Name;
 - The `JOIN data_bank.regions ON customer_nodes.region_id = regions.region_id` clause performs an inner join between the "customer_nodes" table and the "regions" table.
 - The `GROUP BY Region_Name` clause groups the data by the values in the "Region_Name" column.
 
+| region_name | nodes |
+|-------------|-------|
+|   Africa    |   5   |
+|   America   |   5   |
+|    Asia     |   5   |
+|  Australia  |   5   |
+|   Europe    |   5   |
+
+### 3. Quantos clientes estão alocados em cada região?
+```sql
+SELECT Region_Name, COUNT(DISTINCT Customer_Id) as UniqueCustomers
+FROM data_bank.customer_nodes
+JOIN data_bank.regions
+ON customer_nodes.region_id = regions.region_id
+GROUP BY Region_Name
+ORDER BY Region_Name;
+```
+
+- `COUNT(DISTINCT Customer_Id) as UniqueCustomers`: Esta coluna calcula a contagem de valores únicos na coluna "Customer_Id" da tabela "customer_nodes". Cada ID de cliente exclusivo é contado apenas uma vez e a coluna de resultados é rotulada como "UniqueCustomers".
+- A cláusula `JOIN data_bank.regions ON customer_nodes.region_id =regions.region_id` realiza uma junção interna entre a tabela "customer_nodes" e a tabela "regions".
+- A cláusula `GROUP BY Region_Name` agrupa os dados pelos valores na coluna "Region_Name".
+
+No geral, esta consulta recupera a contagem de clientes únicos para cada região juntando as tabelas "customer_nodes" e "regions" na coluna comum "region_id", agrupando os resultados por região e ordenando os resultados por nome de região.
+Esta consulta calcula o número de clientes alocados para cada região.
+
+| region_name | unique_customers |
+|-------------|------------------|
+|   Africa    |       102        |
+|   America   |       105        |
+|    Asia     |       95         |
+|  Australia  |       110        |
+|   Europe    |       88         |
+
+
+
 
 
 
