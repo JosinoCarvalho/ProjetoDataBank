@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>Projeto: Setor Bancário - Analise Comportamental Dos Clientes </h1>
+  <h1>Projeto: Setor Bancário - Análise Comportamental Dos Clientes </h1>
 </div>
 
 ![image](https://github.com/JosinoCarvalho/ProjetoDataBank/assets/111013250/b4fb6231-f809-4091-8ffc-0fc3851fcab4)
